@@ -16,17 +16,28 @@ manual "scan" button, no database, no build step.
 
 ### QR code format
 
-Each student's QR code must encode their **roll number and name** in one of:
+Each student's QR code encodes just their **student ID** — nothing else:
 
 ```
-21CS045|Asha Rao        (pipe-delimited — recommended)
+21CS045
+```
+
+The Name column in the sheet is left blank for these scans (there's no
+roster lookup — see below). The on-screen confirmation and the Name column
+both fall back to showing the ID when no name is present.
+
+For flexibility, a few richer formats are also accepted if you ever want to
+encode a name too — anything else is treated as an **invalid QR** and
+rejected with an on-screen red error:
+
+```
+21CS045|Asha Rao        (pipe-delimited)
 21CS045,Asha Rao        (comma-delimited)
 {"id":"21CS045","name":"Asha Rao"}   (JSON)
 ```
 
-Any other content is treated as an **invalid QR** and rejected with an
-on-screen red error — there is no roster lookup, so whatever ID/name the QR
-contains is what gets written to the sheet.
+There is no roster lookup, so whatever the QR contains is what gets written
+to the sheet as-is.
 
 ### Duplicate prevention
 
