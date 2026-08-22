@@ -107,6 +107,9 @@ html, body {
 .reader {
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .camera-select {
@@ -125,11 +128,17 @@ html, body {
   max-width: calc(100% - 20px);
 }
 
-/* html5-qrcode injects its own <video>/<canvas> into #reader */
+/* html5-qrcode injects its own <video>/<canvas> into #reader and sizes
+   them itself (it measures the actual rendered box to compute where the
+   scan region and qrbox overlay land). Forcing object-fit/cover or a
+   stretched width/height here — as an earlier version of this file did —
+   makes the displayed crop diverge from the region the decoder samples,
+   so a QR code can be visibly centered on screen and still never decode.
+   Only cap the size so it can't overflow the square card; never resize
+   or reshape it. */
 .reader video, .reader canvas {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .hint {
