@@ -73,7 +73,7 @@ Fill in:
 - `SHEET_ID` — from step 1.
 - `SHEET_TAB_NAME` — defaults to `Attendance`.
 - `PORTAL_NAME` — shown in the app header.
-- `TZ` — IANA timezone used for the Date/Time columns (e.g. `Asia/Kolkata`).
+- `ATTENDANCE_TZ` — IANA timezone used for the Date/Time columns (e.g. `Asia/Kolkata`).
 
 Leave `GOOGLE_REFRESH_TOKEN` blank for now — the next step generates it.
 
