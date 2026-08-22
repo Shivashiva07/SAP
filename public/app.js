@@ -144,7 +144,16 @@
   let html5QrCode = null;
   const config = {
     fps: 10,
-    qrbox: { width: 250, height: 250 },
+    // A responsive box instead of a fixed small square — html5-qrcode calls
+    // this with the actual rendered camera size and dims everything outside
+    // the returned box, so a fixed 250x250 looked tiny against a large
+    // camera view. Use 85% of the shorter edge instead, capped so it never
+    // gets absurdly large on a big display.
+    qrbox: (viewfinderWidth, viewfinderHeight) => {
+      const edge = Math.min(viewfinderWidth, viewfinderHeight);
+      const size = Math.min(Math.floor(edge * 0.85), 500);
+      return { width: size, height: size };
+    },
     // Prefer the browser's native, hardware-accelerated barcode detector
     // (Chrome/Edge) over the bundled JS decoder — it's noticeably more
     // tolerant of compression artifacts from relayed/virtual webcam feeds.
