@@ -106,10 +106,59 @@ Open `http://localhost:5000`:
   block camera access on plain HTTP for non-localhost origins.
 - On a **desktop**, open it to monitor the live "Present today" count.
 
+## Deploying to Vercel
+
+The app is already structured for this: `lib/expressApp.js` holds the
+Express app, `server.js` runs it locally with `app.listen`, and
+`api/index.js` exports the same app as a Vercel serverless function.
+Files under `public/` are served by Vercel's static hosting automatically —
+no `vercel.json` needed.
+
+```bash
+npm install -g vercel
+vercel login
+vercel link                 # creates/links a Vercel project
+```
+
+Then add every variable from `.env` (except `PORT`) to the project:
+
+```bash
+vercel env add GOOGLE_CLIENT_ID production --value "<value>"
+vercel env add GOOGLE_CLIENT_SECRET production --value "<value>"
+vercel env add GOOGLE_REDIRECT_URI production --value "http://localhost:5000/oauth2callback"
+vercel env add GOOGLE_REFRESH_TOKEN production --value "<value>"
+vercel env add SHEET_ID production --value "<value>"
+vercel env add SHEET_TAB_NAME production --value "Attendance"
+vercel env add ATTENDANCE_TZ production --value "Asia/Kolkata"
+vercel env add PORTAL_NAME production --value "<value>"
+```
+
+Use `--value`, not stdin — piping a value into `vercel env add` on Windows
+PowerShell was observed to silently prepend a UTF-8 BOM to the stored
+value, which then broke every downstream API call reading that variable.
+
+`GOOGLE_REDIRECT_URI` only matters for the one-time `npm run get-token`
+flow, which you still run locally — the refresh token it prints is what
+actually gets deployed, so there's no need to add Vercel's URL as an
+authorized redirect URI in Google Cloud Console.
+
+```bash
+vercel deploy --prod
+```
+
+**Serverless caveat:** the in-memory duplicate-check cache
+(`lib/expressApp.js`) only lives as long as one warm function instance.
+On Vercel this just means an occasional extra Sheets read on a cold
+start — never a wrong duplicate/success verdict for a single scan — but
+if you see it as a problem at higher traffic, that's the tradeoff to
+revisit first.
+
 ## Project structure
 
 ```
-server.js               Express server — API routes, Sheets sync
+server.js               Local dev entrypoint (app.listen)
+api/index.js             Vercel serverless function entrypoint
+lib/expressApp.js        Express app — routes, duplicate-check cache
 lib/googleAuth.js        OAuth2 client setup
 lib/sheetsService.js     Sheet read/write + duplicate-check helpers
 scripts/get-refresh-token.js   One-time OAuth consent flow
