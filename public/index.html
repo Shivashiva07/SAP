@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Student Attendance Portal</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h1 id="portal-name">Student Attendance Portal</h1>
+      </div>
+      <div class="count-pill" aria-live="polite">
+        <span class="count-label">Present today</span>
+        <span class="count-value" id="count-value">0</span>
+      </div>
+    </header>
+
+    <main class="stage">
+      <div class="scanner-card">
+        <select id="camera-select" class="camera-select" hidden></select>
+        <div id="reader" class="reader"></div>
+
+        <div id="overlay" class="overlay" hidden>
+          <div class="overlay-icon" id="overlay-icon"></div>
+          <div class="overlay-title" id="overlay-title"></div>
+          <div class="overlay-subtitle" id="overlay-subtitle"></div>
+        </div>
+
+        <div id="hint" class="hint">Point a student's QR code at the camera</div>
+      </div>
+
+      <p class="status-line" id="status-line">Starting camera…</p>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="/js/parseQr.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

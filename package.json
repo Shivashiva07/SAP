@@ -1,0 +1,19 @@
+{
+  "name": "qr-attendance-portal",
+  "version": "1.0.0",
+  "description": "QR-based student attendance portal with Google Sheets sync",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "get-token": "node scripts/get-refresh-token.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "googleapis": "^140.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

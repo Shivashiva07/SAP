@@ -1,0 +1,5 @@
+node_modules/
+.env
+*.log
+CLIENT_ID.json
+client_secret*.json
