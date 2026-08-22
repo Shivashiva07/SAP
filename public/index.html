@@ -20,17 +20,18 @@
     </header>
 
     <main class="stage">
-      <div class="scanner-card">
+      <div class="scanner-card" id="scanner-card">
         <select id="camera-select" class="camera-select" hidden></select>
         <div id="reader" class="reader"></div>
-
-        <div id="overlay" class="overlay" hidden>
-          <div class="overlay-icon" id="overlay-icon"></div>
-          <div class="overlay-title" id="overlay-title"></div>
-          <div class="overlay-subtitle" id="overlay-subtitle"></div>
-        </div>
-
         <div id="hint" class="hint">Point a student's QR code at the camera</div>
+      </div>
+
+      <div id="result-panel" class="result-panel" hidden aria-live="polite">
+        <span class="result-icon" id="result-icon"></span>
+        <div class="result-text">
+          <div class="result-title" id="result-title"></div>
+          <div class="result-subtitle" id="result-subtitle"></div>
+        </div>
       </div>
 
       <p class="status-line" id="status-line">Starting camera…</p>

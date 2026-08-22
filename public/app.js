@@ -1,9 +1,10 @@
 (() => {
   const readerEl = document.getElementById('reader');
-  const overlayEl = document.getElementById('overlay');
-  const overlayIconEl = document.getElementById('overlay-icon');
-  const overlayTitleEl = document.getElementById('overlay-title');
-  const overlaySubtitleEl = document.getElementById('overlay-subtitle');
+  const scannerCardEl = document.getElementById('scanner-card');
+  const resultPanelEl = document.getElementById('result-panel');
+  const resultIconEl = document.getElementById('result-icon');
+  const resultTitleEl = document.getElementById('result-title');
+  const resultSubtitleEl = document.getElementById('result-subtitle');
   const hintEl = document.getElementById('hint');
   const statusLineEl = document.getElementById('status-line');
   const countValueEl = document.getElementById('count-value');
@@ -39,18 +40,23 @@
     error: () => { beep(220, 150); setTimeout(() => beep(180, 180), 160); },
   };
 
-  function showOverlay(kind, icon, title, subtitle) {
-    overlayEl.className = `overlay ${kind}`;
-    overlayIconEl.textContent = icon;
-    overlayTitleEl.textContent = title;
-    overlaySubtitleEl.textContent = subtitle || '';
-    overlayEl.hidden = false;
-    hintEl.hidden = true;
+  // Two pieces of feedback per scan: a brief colored ring around the camera
+  // itself (instant, doesn't block the view) and a result card below it
+  // with the actual details (persists for OVERLAY_MS, easy to read).
+  function showResult(kind, icon, title, subtitle) {
+    scannerCardEl.classList.remove('flash-success', 'flash-error', 'flash-duplicate');
+    scannerCardEl.classList.add(`flash-${kind}`);
+
+    resultPanelEl.className = `result-panel ${kind}`;
+    resultIconEl.textContent = icon;
+    resultTitleEl.textContent = title;
+    resultSubtitleEl.textContent = subtitle || '';
+    resultPanelEl.hidden = false;
   }
 
-  function hideOverlay() {
-    overlayEl.hidden = true;
-    hintEl.hidden = false;
+  function hideResult() {
+    scannerCardEl.classList.remove('flash-success', 'flash-error', 'flash-duplicate');
+    resultPanelEl.hidden = true;
   }
 
   function setCount(n) {
@@ -91,8 +97,8 @@
     const parsed = window.parseQrPayload(rawText);
     if (!parsed) {
       sounds.error();
-      showOverlay('error', '✕', 'Invalid QR', 'This code is not a recognized student ID.');
-      setTimeout(() => { hideOverlay(); busy = false; }, OVERLAY_MS);
+      showResult('error', '✕', 'Invalid QR', 'This code is not a recognized student ID.');
+      setTimeout(() => { hideResult(); busy = false; }, OVERLAY_MS);
       return;
     }
 
@@ -106,20 +112,20 @@
 
       if (data.status === 'success') {
         sounds.success();
-        showOverlay('success', '✓', data.name || data.studentId, 'Marked present');
+        showResult('success', '✓', data.name || data.studentId, 'Marked present');
         setCount(data.count);
       } else if (data.status === 'duplicate') {
         sounds.duplicate();
-        showOverlay('duplicate', '●', data.name || data.studentId, 'Already marked present today');
+        showResult('duplicate', '●', data.name || data.studentId, 'Already marked present today');
       } else {
         sounds.error();
-        showOverlay('error', '✕', 'Invalid QR', data.message || 'Could not read this code.');
+        showResult('error', '✕', 'Invalid QR', data.message || 'Could not read this code.');
       }
     } catch (e) {
       sounds.error();
-      showOverlay('error', '✕', 'Connection error', 'Could not reach the server.');
+      showResult('error', '✕', 'Connection error', 'Could not reach the server.');
     } finally {
-      setTimeout(() => { hideOverlay(); busy = false; }, OVERLAY_MS);
+      setTimeout(() => { hideResult(); busy = false; }, OVERLAY_MS);
     }
   }
 

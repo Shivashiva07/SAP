@@ -8,6 +8,7 @@
   --accent: #4f7dff;
   --green: #2ecc71;
   --red: #ff5c5c;
+  --amber: #ffb020;
   --radius: 18px;
 }
 
@@ -102,6 +103,20 @@ html, body {
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.2s ease;
+}
+
+/* Brief colored ring on the camera itself — the instant flash cue.
+   The readable confirmation lives in .result-panel below so the camera
+   feed is never covered up. */
+.scanner-card.flash-success {
+  box-shadow: 0 0 0 4px var(--green), 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+.scanner-card.flash-error {
+  box-shadow: 0 0 0 4px var(--red), 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+.scanner-card.flash-duplicate {
+  box-shadow: 0 0 0 4px var(--amber), 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
 .reader {
@@ -155,38 +170,43 @@ html, body {
   pointer-events: none;
 }
 
-/* ── Feedback overlay ── */
-.overlay {
-  position: absolute;
-  inset: 0;
+/* ── Feedback: result card below the scanner ── */
+.result-panel {
+  width: min(92vw, 480px);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-align: center;
-  padding: 24px;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
   animation: fade-in 0.15s ease-out;
 }
 
-.overlay.success { background: rgba(46, 204, 113, 0.92); }
-.overlay.error { background: rgba(255, 92, 92, 0.92); }
-.overlay.duplicate { background: rgba(255, 176, 32, 0.92); }
+.result-panel.success { background: rgba(46, 204, 113, 0.12); border-color: rgba(46, 204, 113, 0.4); }
+.result-panel.error { background: rgba(255, 92, 92, 0.12); border-color: rgba(255, 92, 92, 0.4); }
+.result-panel.duplicate { background: rgba(255, 176, 32, 0.12); border-color: rgba(255, 176, 32, 0.4); }
 
-.overlay-icon {
-  font-size: 3.2rem;
+.result-icon {
+  font-size: 1.8rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
-.overlay-title {
-  font-size: 1.4rem;
+.result-panel.success .result-icon { color: var(--green); }
+.result-panel.error .result-icon { color: var(--red); }
+.result-panel.duplicate .result-icon { color: var(--amber); }
+
+.result-title {
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #0f1115;
+  color: var(--text);
 }
 
-.overlay-subtitle {
-  font-size: 0.95rem;
-  color: rgba(15, 17, 21, 0.75);
+.result-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 2px;
 }
 
 @keyframes fade-in {
@@ -203,7 +223,7 @@ html, body {
 
 /* ── Responsive ── */
 @media (min-width: 900px) {
-  .scanner-card { width: min(60vw, 560px); }
+  .scanner-card, .result-panel { width: min(60vw, 560px); }
 }
 
 @media (max-width: 480px) {
