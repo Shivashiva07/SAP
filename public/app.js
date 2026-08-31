@@ -144,16 +144,17 @@
   let html5QrCode = null;
   const config = {
     fps: 10,
-    // A responsive box instead of a fixed small square — html5-qrcode calls
-    // this with the actual rendered camera size and dims everything outside
-    // the returned box, so a fixed 250x250 looked tiny against a large
-    // camera view. Use 85% of the shorter edge instead, capped so it never
-    // gets absurdly large on a big display.
-    qrbox: (viewfinderWidth, viewfinderHeight) => {
-      const edge = Math.min(viewfinderWidth, viewfinderHeight);
-      const size = Math.min(Math.floor(edge * 0.85), 500);
-      return { width: size, height: size };
-    },
+    // DELIBERATELY no `qrbox` here. Every mobile scanning failure so far
+    // (the object-fit bug in e37621c, the landscape/pillarbox bug after
+    // that) traced back to the same thing: `qrbox` makes html5-qrcode
+    // crop a sub-region of the frame to scan, and the math mapping that
+    // cropped region back onto the actual displayed video keeps getting
+    // out of sync on phones (CSS sizing, aspect-ratio mismatches, iOS
+    // orientation quirks). Omitting `qrbox` makes it scan the *entire*
+    // camera frame instead — no crop, no coordinate mapping, no way for
+    // "displayed" and "decoded" regions to disagree. The visual brackets
+    // this used to draw are gone; `.hint` below the video is the only
+    // on-screen guidance now, which is fine since the whole frame scans.
     // NOTE: useBarCodeDetectorIfSupported (native BarcodeDetector API) was
     // tried here to help with compression artifacts from relayed/virtual
     // webcam feeds on desktop, but it's unreliable on phones — camera opens
