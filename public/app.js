@@ -154,11 +154,14 @@
       const size = Math.min(Math.floor(edge * 0.85), 500);
       return { width: size, height: size };
     },
-    // Prefer the browser's native, hardware-accelerated barcode detector
-    // (Chrome/Edge) over the bundled JS decoder — it's noticeably more
-    // tolerant of compression artifacts from relayed/virtual webcam feeds.
-    // Falls back to the JS decoder automatically where unsupported.
-    experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+    // NOTE: useBarCodeDetectorIfSupported (native BarcodeDetector API) was
+    // tried here to help with compression artifacts from relayed/virtual
+    // webcam feeds on desktop, but it's unreliable on phones — camera opens
+    // and previews fine, yet detection silently fails or succeeds only
+    // intermittently on mobile Chrome (see mebjas/html5-qrcode#905, #764,
+    // #824). Stick with the bundled JS decoder, which is what was actually
+    // tested against phone cameras.
+    experimentalFeatures: { useBarCodeDetectorIfSupported: false },
   };
 
   // Many virtual/external webcams (e.g. a phone used as a PC camera)
