@@ -169,7 +169,18 @@
   // explicitly requested, which blurs dense QR codes past the point
   // the decoder can find finder patterns. Ask for HD; the browser will
   // fall back to the closest resolution the device actually supports.
-  const HD_RESOLUTION = { width: { ideal: 1920 }, height: { ideal: 1080 } };
+  //
+  // IMPORTANT: this must stay a SQUARE aspect ratio (aspectRatio: 1),
+  // matching .scanner-card's `aspect-ratio: 1/1`. A landscape ideal like
+  // 1920x1080 gets honored by phone cameras as an actual landscape frame
+  // (iOS Safari in particular reports it back in native portrait
+  // orientation), which then gets pillarboxed inside the square card.
+  // html5-qrcode computes its qrbox/scan-region crop assuming the video
+  // fills its container, so that pillarboxing makes it sample the wrong
+  // part of the raw frame — the QR can look dead-center on screen and
+  // still never decode. Requesting a square frame up front means there's
+  // no letterbox/pillarbox gap for that math to get wrong.
+  const HD_RESOLUTION = { width: { ideal: 1080 }, height: { ideal: 1080 }, aspectRatio: { ideal: 1 } };
 
   async function startWithSource(cameraIdOrConstraints) {
     if (html5QrCode.isScanning) {
