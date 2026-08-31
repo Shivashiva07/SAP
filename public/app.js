@@ -217,8 +217,16 @@
         }
 
         const lastId = localStorage.getItem(LAST_CAMERA_KEY);
+        // Prefer a device explicitly labeled as the back/rear camera — on
+        // phones this is far more reliable than enumeration order, which
+        // varies by device/browser and doesn't consistently put the back
+        // camera last (or first). Falls back to the old "last device" guess
+        // for desktops/webcams whose labels don't say front/back at all.
+        const backCamera = devices.find((d) => /back|rear|environment/i.test(d.label));
         const initialId = devices.some((d) => d.id === lastId)
           ? lastId
+          : backCamera
+          ? backCamera.id
           : devices[devices.length - 1].id; // last device is often the external/added one
         cameraSelectEl.value = initialId;
 
