@@ -159,24 +159,32 @@
     // tolerant of compression artifacts from relayed/virtual webcam feeds.
     // Falls back to the JS decoder automatically where unsupported.
     experimentalFeatures: { useBarCodeDetectorIfSupported: true },
-    // Many virtual/external webcams (e.g. a phone used as a PC camera)
-    // default to a low capture resolution unless a higher one is
-    // explicitly requested, which blurs dense QR codes past the point
-    // the decoder can find finder patterns. Ask for HD; the browser will
-    // fall back to the closest resolution the device actually supports.
-    videoConstraints: {
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
-    },
   };
+
+  // Many virtual/external webcams (e.g. a phone used as a PC camera)
+  // default to a low capture resolution unless a higher one is
+  // explicitly requested, which blurs dense QR codes past the point
+  // the decoder can find finder patterns. Ask for HD; the browser will
+  // fall back to the closest resolution the device actually supports.
+  const HD_RESOLUTION = { width: { ideal: 1920 }, height: { ideal: 1080 } };
 
   async function startWithSource(cameraIdOrConstraints) {
     if (html5QrCode.isScanning) {
       await html5QrCode.stop();
     }
+    // IMPORTANT: html5-qrcode's `configuration.videoConstraints`, if set,
+    // takes precedence over `cameraIdOrConfig` and the browser picks its
+    // own default camera — silently ignoring the deviceId/facingMode the
+    // user selected. So the resolution hint must be merged into the same
+    // constraints object as the camera selection, not passed alongside it.
+    const videoConstraints =
+      typeof cameraIdOrConstraints === 'string'
+        ? { deviceId: { exact: cameraIdOrConstraints }, ...HD_RESOLUTION }
+        : { ...cameraIdOrConstraints, ...HD_RESOLUTION };
+
     await html5QrCode.start(
       cameraIdOrConstraints,
-      config,
+      { ...config, videoConstraints },
       (decodedText) => handleDecodedText(decodedText),
       onScanFailure
     );
